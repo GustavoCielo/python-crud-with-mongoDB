@@ -8,8 +8,7 @@ db = client["kenzie"]
 
 class Post:
     id = 0
-    # method to increment id by 1 for each post
-    # find in DB the last uid generated and increment from there
+    # TODO: find in DB the last id generated and increment from there
 
     def __init__(
             self,
@@ -28,15 +27,36 @@ class Post:
 
     @staticmethod
     def generate_id():
+        """Method to generate numeric id for posts"""
         Post.id += 1
         return Post.id
 
     def save(self):
+        """Method to save posts in data base in dict format"""
         data = db.posts.insert_one(self.__dict__)
         if data:
             return data
 
+    def get_all():
+        """Method to find a post, delete its UID
+        from mongo and return a list"""
+
+        data = list(db.posts.find())
+        for key in data:
+            del key["_id"]
+        return data
+
+    def get_post_by_id(requested_id):
+        """Method to find a specific post through id received via url params,
+        delete its UID from mongo and return a list"""
+
+        data = list(db.posts.find({"id": requested_id}))
+        for key in data:
+            del key["_id"]
+        return data
+
     def serialized(self):
+        """Object serialization"""
         return {
             "id": self.id,
             "title": self.title,

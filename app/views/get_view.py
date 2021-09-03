@@ -1,19 +1,17 @@
-from flask import Flask
-from app.models.Post import db
+from flask import Flask, jsonify
+from app.models.Post import Post
 
 
 def init_app(app: Flask):
 
     @app.get("/posts")
     def get_all_posts():
-        data = list(db.posts.find())
-        for object in data:
-            del object["_id"]
-        print(data)
-        return data, 200
-    # get all published posts
+        """route to get all published posts"""
+        posts = Post.get_all()
+        return jsonify(posts), 200
 
     @app.get("/posts/<int:id>")
-    def get_post_by_id(post_id):
-        ...
-    # get posts by specific id
+    def get_post_by_id(id: int):
+        """route to get posts specified by id through url params"""
+        posts = Post.get_post_by_id(id)
+        return jsonify(posts), 200
