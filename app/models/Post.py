@@ -1,9 +1,14 @@
 from datetime import datetime
+import os
 from pymongo import MongoClient
+from dotenv import load_dotenv
 
-client = MongoClient("mongodb://localhost:27017/")
 
-db = client["kenzie"]
+load_dotenv()
+client = MongoClient(
+    os.getenv("DATABASE_URL", int(os.getenv("DATABASE_PORT"))))
+
+db = client[os.getenv("DATABASE_NAME")]
 
 
 class Post:
@@ -19,7 +24,7 @@ class Post:
             ):
         self.id = Post.generate_id()
         self.created_at = datetime.utcnow()
-        self.updated_at = datetime.utcnow()
+        self.updated_at = Post.update_time()
         self.title = title
         self.author = author
         self.tags = tags
@@ -27,17 +32,24 @@ class Post:
 
     @staticmethod
     def generate_id():
+
         """Method to generate numeric id for posts"""
+
         Post.id += 1
         return Post.id
 
+    def update_time():
+        Post.updated_at = datetime.utcnow()
+
     def save(self):
+
         """Method to save posts in data base in dict format"""
         data = db.posts.insert_one(self.__dict__)
         if data:
             return data
 
     def get_all():
+
         """Method to find a post, delete its UID
         from mongo and return a list"""
 
@@ -47,6 +59,7 @@ class Post:
         return data
 
     def get_post_by_id(requested_id):
+
         """Method to find a specific post through id received via url params,
         delete its UID from mongo and return a list"""
 
@@ -56,15 +69,32 @@ class Post:
         return data
 
     def delete_post_by_id(requested_id):
+
+        """method to find post by id and delete it"""
+
         try:
             data = db.posts.find_one_and_delete({"id": requested_id})
             del data["_id"]
             return True
         except:
             return False
+        # TODO: raise exception
+
+    def update_post_by_id(id, post):
+
+        """method to find post via id and update it"""
+
+        try:
+            data = db.posts.find_one_and_update({"id": id}, {"$set": post})
+            del data["id"]
+            return data
+        except:
+            return {"msg": "Id não encontrado ou chaves inválidas"}, 404
 
     def serialized(self):
+
         """Object serialization"""
+
         return {
             "id": self.id,
             "title": self.title,
