@@ -55,6 +55,14 @@ class Post:
             del key["_id"]
         return data
 
+    def delete_post_by_id(requested_id):
+        try:
+            data = db.posts.find_one_and_delete({"id": requested_id})
+            del data["_id"]
+            return True
+        except:
+            return False
+
     def serialized(self):
         """Object serialization"""
         return {

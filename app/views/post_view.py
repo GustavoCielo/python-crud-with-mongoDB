@@ -19,6 +19,8 @@ def init_app(app: Flask):
         # update an existing post
 
     @app.delete("/posts/<int:id>")
-    def delete_post():
-        ...
-        # delete an existing post
+    def delete_post(id: int):
+        post = Post.delete_post_by_id(id)
+        if post:
+            return {"msg": ""}, 204
+        return {"msg": "Post not found"}, 404

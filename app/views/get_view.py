@@ -13,5 +13,5 @@ def init_app(app: Flask):
     @app.get("/posts/<int:id>")
     def get_post_by_id(id: int):
         """route to get posts specified by id through url params"""
-        posts = Post.get_post_by_id(id)
-        return jsonify(posts), 200
+        post = Post.get_post_by_id(id)
+        return jsonify(post), 200
