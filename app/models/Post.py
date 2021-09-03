@@ -40,6 +40,7 @@ class Post:
 
     def update_time():
         Post.updated_at = datetime.utcnow()
+        # TODO: make this work
 
     def save(self):
 
